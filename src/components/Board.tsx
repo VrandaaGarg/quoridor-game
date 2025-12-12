@@ -11,32 +11,19 @@
 import { useRef, useState, useCallback, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useGameStore } from "@/store";
-import { GameState, Position, Wall, WallDir, Player } from "@/types";
+import { Position, Wall, WallDir, Player } from "@/types";
 import { isValidWall } from "@/lib/game";
 import { sendSocket } from "@/lib/socket";
+import Ghost from "./Ghost";
 
-const CELL = 52;
-const GAP = 12;
-const BOARD_PX = CELL * 9 + GAP * 8;
-const PADDING = 12;
-const GRID_PADDING = 4;
-const TOTAL_OFFSET = PADDING + GRID_PADDING;
-const PAWN_SIZE = 40;
-
-// Generate explicit grid track sizes: CELL, GAP, CELL, GAP, ... CELL
-const gridTrackSizes = Array.from({ length: 17 }, (_, i) =>
-  i % 2 === 0 ? `${CELL}px` : `${GAP}px`
-).join(" ");
+const GRID_SIZE = 9;
+const CELL_PERCENT = 100 / GRID_SIZE;
+const GAP_PERCENT = 0.8;
 
 const cellKey = (pos: Position) => `${pos.row}-${pos.col}`;
 
 const isMove = (moves: Position[], pos: Position) =>
   moves.some((m) => m.row === pos.row && m.col === pos.col);
-
-const pawnColors = {
-  player1: { bg: "bg-red-500", ring: "ring-red-300" },
-  player2: { bg: "bg-green-500", ring: "ring-green-300" },
-};
 
 type Props = { interactive?: boolean };
 
@@ -44,14 +31,16 @@ function DraggableWall({
   dir,
   disabled,
   onDragStateChange,
+  compact = false,
 }: {
   dir: WallDir;
   disabled: boolean;
   onDragStateChange: (dragging: boolean, dir: WallDir) => void;
+  compact?: boolean;
 }) {
   const isHorizontal = dir === "h";
-  const width = isHorizontal ? CELL * 2 + GAP : GAP + 2;
-  const height = isHorizontal ? GAP + 2 : CELL * 2 + GAP;
+  const width = isHorizontal ? (compact ? 50 : 80) : (compact ? 10 : 14);
+  const height = isHorizontal ? (compact ? 10 : 14) : (compact ? 50 : 80);
 
   return (
     <motion.div
@@ -62,12 +51,21 @@ function DraggableWall({
       onDragStart={() => onDragStateChange(true, dir)}
       onDragEnd={() => onDragStateChange(false, dir)}
       whileDrag={{ scale: 1.05, zIndex: 1000, opacity: 0.9 }}
-      className={`rounded-md bg-amber-900 shadow-md ring-1 ring-amber-950 ${
+      className={`rounded-sm overflow-hidden ${
         disabled
           ? "cursor-not-allowed opacity-30"
-          : "cursor-grab hover:bg-amber-800 hover:shadow-lg active:cursor-grabbing"
+          : "cursor-grab hover:brightness-110 hover:shadow-lg active:cursor-grabbing"
       }`}
-      style={{ width, height, touchAction: "none" }}
+      style={{
+        width,
+        height,
+        touchAction: "none",
+        background: isHorizontal
+          ? "linear-linear(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)"
+          : "linear-linear(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
+        boxShadow: "inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)",
+        border: "1px solid #5D3A1A",
+      }}
     />
   );
 }
@@ -78,41 +76,120 @@ function PlayerPanel({
   wallsLeft,
   canDrag,
   onDragStateChange,
+  compact = false,
 }: {
   player: Player;
   isCurrentTurn: boolean;
   wallsLeft: number;
   canDrag: boolean;
   onDragStateChange: (dragging: boolean, dir: WallDir) => void;
+  compact?: boolean;
 }) {
   const { game } = useGameStore();
   if (!game) return null;
 
   const info = game.players[player];
-  const colors = pawnColors[player];
+
+  if (compact) {
+    return (
+      <div
+        className="flex mt-4 flex-col items-center gap-2 rounded-xl p-2 transition min-w-[100px]"
+        style={{
+          background: isCurrentTurn ? "C9986B" : "# #DEB887",
+          boxShadow: isCurrentTurn
+            ? "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.2)"
+            : "0 2px 8px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1)",
+          border: isCurrentTurn ? "2px solid #A0522D" : "2px solid #8B4513",
+          opacity:isCurrentTurn ? 1 : 0.6,
+        }}
+      >
+        {/* Compact: Avatar + Name */}
+        <div className="flex flex-col items-center gap-1">
+          <div
+            className={`relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full ${
+              player === "player1" ? "bg-white" : "bg-white"
+            }`}
+            style={{
+              border: "2px solid #5D3A1A",
+              boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
+            }}
+          >
+            <div className="relative top-2" style={{ scale: "1.2" }}>
+              <Ghost color={player === "player1" ? "red" : "green"} isMoving={false} />
+            </div>
+          </div>
+          <div className="text-[10px] font-bold truncate max-w-20" style={{ color: "#3D2510" }}>{info.name}</div>
+        </div>
+
+        {/* Compact: Walls counter */}
+        <div className="flex items-center gap-1">
+          <span className="text-[9px] font-medium uppercase" style={{ color: "#5D3A1A" }}>Walls:</span>
+          <span className="text-sm font-bold" style={{ color: "#3D2510" }}>{wallsLeft}</span>
+        </div>
+
+        {/* Compact: Draggable walls in a row */}
+        <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center">
+            <DraggableWall
+              dir="v"
+              disabled={!canDrag || wallsLeft === 0}
+              onDragStateChange={onDragStateChange}
+              compact
+            />
+            <span className="text-[8px]" style={{ color: "#6B3E0A" }}>V</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <DraggableWall
+              dir="h"
+              disabled={!canDrag || wallsLeft === 0}
+              onDragStateChange={onDragStateChange}
+              compact
+            />
+            <span className="text-[8px]" style={{ color: "#6B3E0A" }}>H</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
-      className={`flex flex-col items-center gap-4 rounded-xl p-4 transition ${
-        isCurrentTurn
-          ? "bg-amber-50 ring-2 ring-amber-300"
-          : "bg-white/40"
-      }`}
+      className="flex flex-col items-center gap-4 rounded-2xl px-7 p-4 transition"
+      style={{
+        background: isCurrentTurn
+          ? "linear-linear(145deg, #C9986B 0%, #BC8B5E 100%) "
+          : "linear-linear(145deg, #DEB887 0%, #D2A679 100%)",
+        boxShadow: isCurrentTurn
+          ? "0 6px 20px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.25)"
+          : "0 4px 12px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.15)",
+        border: isCurrentTurn ? "3px solid #A0522D" : "3px solid #8B4513",
+        opacity:isCurrentTurn ? 1 : 0.6,
+      }}
     >
       {/* Player icon and name */}
       <div className="flex flex-col items-center gap-2">
         <div
-          className={`h-12 w-12 rounded-full ${colors.bg} shadow-lg ring-4 ${colors.ring}`}
-        />
-        <div className="text-sm font-bold text-amber-900">{info.name}</div>
+          className={`relative flex h-20 w-20 lg:h-24 lg:w-24 items-center justify-center overflow-hidden rounded-full ${
+            player === "player1" ? "bg-white" : "bg-white"
+          }`}
+          style={{
+            border: "3px solid #5D3A1A",
+            boxShadow: "inset 0 3px 6px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.2)",
+          }}
+        >
+          <div className="relative top-3 lg:top-4" style={{ scale: "2.2" }}>
+            <Ghost color={player === "player1" ? "red" : "green"} isMoving={false} />
+          </div>
+        </div>
+        <div className="text-sm font-bold" style={{ color: "#3D2510" }}>{info.name}</div>
       </div>
 
       {/* Walls counter */}
       <div className="flex flex-col items-center gap-1">
-        <div className="text-xs font-medium uppercase tracking-wide text-amber-600">
+        <div className="text-xs font-medium uppercase tracking-wide" style={{ color: "#5D3A1A" }}>
           Walls
         </div>
-        <div className="text-2xl font-bold text-amber-800">{wallsLeft}</div>
+        <div className="text-2xl font-bold" style={{ color: "#3D2510" }}>{wallsLeft}</div>
       </div>
 
       {/* Draggable walls */}
@@ -125,7 +202,7 @@ function PlayerPanel({
               disabled={!canDrag || wallsLeft === 0}
               onDragStateChange={onDragStateChange}
             />
-            <span className="text-[10px] text-amber-500">V</span>
+            <span className="text-[10px]" style={{ color: "#6B3E0A" }}>V</span>
           </div>
           {/* Horizontal wall */}
           <div className="flex flex-col items-center gap-1">
@@ -134,7 +211,7 @@ function PlayerPanel({
               disabled={!canDrag || wallsLeft === 0}
               onDragStateChange={onDragStateChange}
             />
-            <span className="text-[10px] text-amber-500">H</span>
+            <span className="text-[10px]" style={{ color: "#6B3E0A" }}>H</span>
           </div>
         </div>
       </div>
@@ -156,6 +233,18 @@ export function Board({ interactive = true }: Props) {
 
   const boardRef = useRef<HTMLDivElement>(null);
   const [draggingDir, setDraggingDir] = useState<WallDir | null>(null);
+  const [boardSize, setBoardSize] = useState(0);
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (boardRef.current) {
+        setBoardSize(boardRef.current.offsetWidth);
+      }
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const previewValid = useMemo(() => {
     if (!game || !wallPreview) return false;
@@ -164,29 +253,29 @@ export function Board({ interactive = true }: Props) {
 
   const getWallFromCoords = useCallback(
     (clientX: number, clientY: number): Wall | null => {
-      if (!boardRef.current || !draggingDir) return null;
+      if (!boardRef.current || !draggingDir || boardSize === 0) return null;
 
       const rect = boardRef.current.getBoundingClientRect();
-      const x = clientX - rect.left - TOTAL_OFFSET;
-      const y = clientY - rect.top - TOTAL_OFFSET;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
 
+      const cellSize = boardSize / GRID_SIZE;
+      
       const findIntersection = (coord: number) => {
-        const firstIntersection = CELL;
-        const spacing = CELL + GAP;
-        const idx = Math.round((coord - firstIntersection) / spacing);
+        const idx = Math.round(coord / cellSize) - 1;
         return Math.max(0, Math.min(7, idx));
       };
 
       const wallCol = findIntersection(x);
       const wallRow = findIntersection(y);
 
-      if (x < -20 || y < -20 || x > BOARD_PX + 20 || y > BOARD_PX + 20) {
+      if (x < -20 || y < -20 || x > boardSize + 20 || y > boardSize + 20) {
         return null;
       }
 
       return { row: wallRow, col: wallCol, dir: draggingDir };
     },
-    [draggingDir]
+    [draggingDir, boardSize]
   );
 
   useEffect(() => {
@@ -236,6 +325,25 @@ export function Board({ interactive = true }: Props) {
     }
   };
 
+  const getWallStyle = (w: Wall) => {
+    const isH = w.dir === "h";
+    if (isH) {
+      return {
+        left: `${w.col * CELL_PERCENT + GAP_PERCENT}%`,
+        top: `${(w.row + 1) * CELL_PERCENT - GAP_PERCENT / 2}%`,
+        width: `${CELL_PERCENT * 2 - GAP_PERCENT * 2}%`,
+        height: `${GAP_PERCENT * 2}%`,
+      };
+    } else {
+      return {
+        left: `${(w.col + 1) * CELL_PERCENT - GAP_PERCENT / 2}%`,
+        top: `${w.row * CELL_PERCENT + GAP_PERCENT}%`,
+        width: `${GAP_PERCENT * 2}%`,
+        height: `${CELL_PERCENT * 2 - GAP_PERCENT * 2}%`,
+      };
+    }
+  };
+
   if (!game) return null;
 
   const currentTurn = game.turn;
@@ -244,178 +352,191 @@ export function Board({ interactive = true }: Props) {
   const canDragP1 = interactive && isMyTurn() && currentTurn === "player1";
   const canDragP2 = interactive && isMyTurn() && currentTurn === "player2";
 
-  // Build grid
-  const grid = [];
-  for (let r = 0; r < 17; r += 1) {
-    for (let c = 0; c < 17; c += 1) {
-      const isCellTile = r % 2 === 0 && c % 2 === 0;
-      const isIntersection = r % 2 === 1 && c % 2 === 1;
-
-      if (isCellTile) {
-        const cell: Position = { row: r / 2, col: c / 2 };
-        const movable = isMove(validMoves, cell);
-        grid.push(
-          <button
-            key={`cell-${cellKey(cell)}`}
-            type="button"
-            onClick={() => handleCellClick(cell)}
-            className={`relative flex items-center justify-center rounded-xl transition ${
-              movable && interactive ? "hover:ring-2 hover:ring-amber-300" : ""
-            }`}
-            style={{
-              width: CELL,
-              height: CELL,
-              backgroundColor: "#f4a261",
-            }}
-          >
-            {movable && (
-              <motion.div
-                className="absolute inset-2 rounded-lg bg-white/30"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              />
-            )}
-          </button>
-        );
-      } else if (isIntersection) {
-        grid.push(
-          <div key={`ix-${r}-${c}`} style={{ width: GAP, height: GAP }} />
-        );
-      } else {
-        grid.push(
-          <div
-            key={`groove-${r}-${c}`}
-            style={{
-              width: c % 2 === 0 ? CELL : GAP,
-              height: r % 2 === 0 ? CELL : GAP,
-              backgroundColor: "#f7d1a0",
-            }}
-          />
-        );
-      }
-    }
-  }
-
-  // Calculate pawn positions (absolutely positioned outside grid)
   const p1Pos = game.players.player1.pos;
   const p2Pos = game.players.player2.pos;
-  const getPawnStyle = (pos: Position) => ({
-    top: TOTAL_OFFSET + pos.row * (CELL + GAP) + (CELL - PAWN_SIZE) / 2,
-    left: TOTAL_OFFSET + pos.col * (CELL + GAP) + (CELL - PAWN_SIZE) / 2,
-  });
-
-  // Render placed walls
-  const placedWalls = game.walls.map((w) => {
-    const top = TOTAL_OFFSET + w.row * (CELL + GAP) + CELL;
-    const left = TOTAL_OFFSET + w.col * (CELL + GAP) + CELL;
-    const isH = w.dir === "h";
-    return (
-      <motion.div
-        key={`w-${w.dir}-${w.row}-${w.col}`}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="absolute rounded-md bg-amber-900 shadow-md ring-1 ring-amber-950"
-        style={{
-          top: isH ? top : top - CELL - GAP / 2 + GAP / 2,
-          left: isH ? left - CELL - GAP / 2 + GAP / 2 : left,
-          width: isH ? CELL * 2 + GAP : GAP,
-          height: isH ? GAP : CELL * 2 + GAP,
-        }}
-      />
-    );
-  });
-
-  // Render wall preview
-  const previewWall = wallPreview && (
-    <motion.div
-      key="preview"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 0.8 }}
-      className={`pointer-events-none absolute rounded-md shadow-lg ${
-        previewValid
-          ? "bg-green-400 ring-2 ring-green-500"
-          : "bg-red-400 ring-2 ring-red-500"
-      }`}
-      style={{
-        top:
-          wallPreview.dir === "h"
-            ? TOTAL_OFFSET + wallPreview.row * (CELL + GAP) + CELL
-            : TOTAL_OFFSET +
-              wallPreview.row * (CELL + GAP) +
-              CELL -
-              CELL -
-              GAP / 2 +
-              GAP / 2,
-        left:
-          wallPreview.dir === "h"
-            ? TOTAL_OFFSET +
-              wallPreview.col * (CELL + GAP) +
-              CELL -
-              CELL -
-              GAP / 2 +
-              GAP / 2
-            : TOTAL_OFFSET + wallPreview.col * (CELL + GAP) + CELL,
-        width: wallPreview.dir === "h" ? CELL * 2 + GAP : GAP,
-        height: wallPreview.dir === "h" ? GAP : CELL * 2 + GAP,
-      }}
-    />
-  );
 
   return (
-    <div className="flex items-center gap-6">
-      {/* Player 1 panel on the left */}
-      <PlayerPanel
-        player="player1"
-        isCurrentTurn={currentTurn === "player1"}
-        wallsLeft={p1Walls}
-        canDrag={canDragP1}
-        onDragStateChange={handleDragStateChange}
-      />
+    <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
+      {/* Desktop: Player1 | Board | Player2 in row */}
+      {/* Mobile: Board on top, Players below */}
+      
+      <div className="flex flex-col items-center gap-4 sm:gap-8 lg:flex-row lg:items-center w-full justify-center">
+        {/* Player 1 - hidden on mobile, shown on desktop left */}
+        <div className="hidden lg:block">
+          <PlayerPanel
+            player="player1"
+            isCurrentTurn={currentTurn === "player1"}
+            wallsLeft={p1Walls}
+            canDrag={canDragP1}
+            onDragStateChange={handleDragStateChange}
+          />
+        </div>
 
-      {/* Board */}
-      <div
-        ref={boardRef}
-        className="relative rounded-2xl border border-amber-200 bg-amber-100/60 p-3 shadow-lg"
-        style={{ width: BOARD_PX + 24, height: BOARD_PX + 24 }}
-      >
+        {/* Board - Responsive with wooden 3D appearance */}
         <div
-          className="grid rounded-xl bg-amber-200 p-1"
+          ref={boardRef}
+          className="relative aspect-square w-full max-w-[min(90vw,500px)] overflow-hidden rounded-2xl sm:rounded-3xl p-3 sm:p-4"
           style={{
-            width: BOARD_PX,
-            height: BOARD_PX,
-            gridTemplateColumns: gridTrackSizes,
-            gridTemplateRows: gridTrackSizes,
-            gap: 0,
+            background: "linear-linear(145deg, #8B4513 0%, #6B3E0A 30%, #5D3A1A 70%, #4A2E15 100%)",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.3)",
+            border: "3px solid #3D2510",
           }}
         >
-          {grid}
+          {/* Inner wooden surface */}
+          <div
+            className="relative h-full w-full overflow-hidden rounded-xl sm:rounded-2xl p-1.5 sm:p-2"
+            style={{
+              background: "#A87B34",
+              boxShadow: "inset 0 3px 8px rgba(0,0,0,0.25), inset 0 -1px 2px rgba(255,255,255,0.15)",
+            }}
+          >
+            {/* Grid cells */}
+            <div className="grid h-full w-full grid-cols-9 grid-rows-9 gap-0.5 sm:gap-1">
+              {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, index) => {
+                const row = Math.floor(index / GRID_SIZE);
+                const col = index % GRID_SIZE;
+                const pos: Position = { row, col };
+                const movable = isMove(validMoves, pos);
+
+                return (
+                  <button
+                    key={`cell-${cellKey(pos)}`}
+                    type="button"
+                    onClick={() => handleCellClick(pos)}
+                    className={`relative flex cursor-pointer items-center justify-center rounded-md sm:rounded-lg transition ${
+                      movable && interactive ? "hover:ring-2 hover:ring-amber-400" : ""
+                    }`}
+                    style={{
+                      background: "linear-linear(145deg, #E8C89A 0%, #DEB887 50%, #D4A574 100%)",
+                      boxShadow: "inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    {movable && (
+                      <motion.div
+                        className="absolute inset-1 sm:inset-2 rounded-md sm:rounded-lg"
+                        style={{
+                          background: "rgba(255, 255, 255, 0.5)",
+                          boxShadow: "0 0 8px rgba(255, 215, 0, 0.4)",
+                        }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Placed walls */}
+            {game.walls.map((w) => {
+              const isH = w.dir === "h";
+              return (
+                <motion.div
+                  key={`w-${w.dir}-${w.row}-${w.col}`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="absolute rounded-sm overflow-hidden"
+                  style={{
+                    ...getWallStyle(w),
+                    background: isH
+                      ? "linear-linear(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)"
+                      : "linear-linear(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
+                    boxShadow: "inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)",
+                    border: "1px solid #5D3A1A",
+                  }}
+                />
+              );
+            })}
+
+            {/* Wall preview */}
+            {wallPreview && (
+              <motion.div
+                key="preview"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: previewValid ? 0.75 : 0.8 }}
+                className="pointer-events-none absolute rounded-sm overflow-hidden"
+                style={{
+                  ...getWallStyle(wallPreview),
+                  background: previewValid
+                    ? wallPreview.dir === "h"
+                      ? "linear-linear(to bottom, #5D3A1A 0%, #6B3E0A 20%, #5D3A1A 40%, #4A2E15 60%, #5D3A1A 80%, #6B3E0A 100%)"
+                      : "linear-linear(to right, #5D3A1A 0%, #6B3E0A 20%, #5D3A1A 40%, #4A2E15 60%, #5D3A1A 80%, #6B3E0A 100%)"
+                    : "#ef4444",
+                  boxShadow: previewValid
+                    ? "inset 0 1px 2px rgba(255,255,255,0.15), inset 0 -1px 2px rgba(0,0,0,0.4), 0 3px 6px rgba(0,0,0,0.4)"
+                    : "0 0 8px rgba(239, 68, 68, 0.5)",
+                  border: previewValid ? "1px solid #3D2510" : "2px solid #dc2626",
+                }}
+              />
+            )}
+
+            {/* Player 1 (Red Ghost) */}
+            <motion.div
+              className="absolute flex items-center justify-center pointer-events-none"
+              animate={{
+                left: `${(p1Pos.col / GRID_SIZE) * 100}%`,
+                top: `${(p1Pos.row / GRID_SIZE) * 100}%`,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              style={{
+                width: `${CELL_PERCENT}%`,
+                height: `${CELL_PERCENT}%`,
+                zIndex: 100,
+              }}
+            >
+              <Ghost color="red" isMoving={currentTurn === "player1"} />
+            </motion.div>
+
+            {/* Player 2 (Green Ghost) */}
+            <motion.div
+              className="absolute flex items-center justify-center pointer-events-none"
+              animate={{
+                left: `${(p2Pos.col / GRID_SIZE) * 100}%`,
+                top: `${(p2Pos.row / GRID_SIZE) * 100}%`,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              style={{
+                width: `${CELL_PERCENT}%`,
+                height: `${CELL_PERCENT}%`,
+                zIndex: 100,
+              }}
+            >
+              <Ghost color="green" isMoving={currentTurn === "player2"} />
+            </motion.div>
+          </div>
         </div>
-        {placedWalls}
-        {previewWall}
-        
-        {/* Pawns - rendered outside grid for proper z-index during animation */}
-        <motion.div
-          className="pointer-events-none absolute h-10 w-10 rounded-full bg-red-500 shadow-lg ring-2 ring-red-300"
-          animate={getPawnStyle(p1Pos)}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          style={{ zIndex: 100 }}
-        />
-        <motion.div
-          className="pointer-events-none absolute h-10 w-10 rounded-full bg-green-500 shadow-lg ring-2 ring-green-300"
-          animate={getPawnStyle(p2Pos)}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          style={{ zIndex: 100 }}
-        />
+
+        {/* Player 2 - hidden on mobile, shown on desktop right */}
+        <div className="hidden lg:block">
+          <PlayerPanel
+            player="player2"
+            isCurrentTurn={currentTurn === "player2"}
+            wallsLeft={p2Walls}
+            canDrag={canDragP2}
+            onDragStateChange={handleDragStateChange}
+          />
+        </div>
       </div>
 
-      {/* Player 2 panel on the right */}
-      <PlayerPanel
-        player="player2"
-        isCurrentTurn={currentTurn === "player2"}
-        wallsLeft={p2Walls}
-        canDrag={canDragP2}
-        onDragStateChange={handleDragStateChange}
-      />
+      {/* Mobile: Player panels below the board - compact version */}
+      <div className="flex items-start justify-between w-full max-w-[min(90vw,500px)] lg:hidden">
+        <PlayerPanel
+          player="player1"
+          isCurrentTurn={currentTurn === "player1"}
+          wallsLeft={p1Walls}
+          canDrag={canDragP1}
+          onDragStateChange={handleDragStateChange}
+          compact
+        />
+        <PlayerPanel
+          player="player2"
+          isCurrentTurn={currentTurn === "player2"}
+          wallsLeft={p2Walls}
+          canDrag={canDragP2}
+          onDragStateChange={handleDragStateChange}
+          compact
+        />
+      </div>
     </div>
   );
 }

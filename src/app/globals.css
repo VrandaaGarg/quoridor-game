@@ -10,12 +10,45 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-fredoka: var(--font-fredoka);
+  --font-rubik: var(--font-rubik-bubbles);
 }
 
 body {
-  background: radial-gradient(circle at 20% 20%, #ffe8bf 0, transparent 25%),
-    radial-gradient(circle at 80% 0%, #ffd28d 0, transparent 25%),
+  background: radial-linear(circle at 20% 20%, #ffe8bf 0, transparent 25%),
+    radial-linear(circle at 80% 0%, #ffd28d 0, transparent 25%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+.font-fredoka {
+  font-family: var(--font-fredoka), sans-serif;
+}
+
+.font-rubik {
+  font-family: var(--font-rubik-bubbles), cursive;
+}
+
+@keyframes wobble-float {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(1px, -2px) rotate(-2deg);
+  }
+  50% {
+    transform: translate(0, -4px) rotate(0deg);
+  }
+  75% {
+    transform: translate(-1px, -2px) rotate(2deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+.animate-wobble-float {
+  animation: wobble-float 3s infinite ease-in-out;
+  display: inline-block;
 }

@@ -1,0 +1,361 @@
+.ghost-container {
+  position: relative;
+  scale: 0.23;
+  transform-origin: center center;
+}
+
+.ghost-body {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: repeat(14, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  grid-template-areas:
+    "a1  a2  a3  a4  a5  top0  top0  top0  top0  a10 a11 a12 a13 a14"
+    "b1  b2  b3  top1 top1 top1 top1 top1 top1 top1 top1 b12 b13 b14"
+    "c1 c2 top2 top2 top2 top2 top2 top2 top2 top2 top2 top2 c13 c14"
+    "d1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 d14"
+    "e1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 e14"
+    "f1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 f14"
+    "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+    "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+    "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+    "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+    "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+    "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+    "st0 st0 an4 st1 an7 st2 an10 an10 st3 an13 st4 an16 st5 st5"
+    "an1 an2 an3 an5 an6 an8 an9 an9 an11 an12 an14 an15 an17 an18";
+}
+
+/* Animation only when moving */
+.ghost-animating .ghost-body {
+  animation: upNDown infinite 0.5s;
+}
+
+@keyframes upNDown {
+  0%, 49% {
+    transform: translateY(0px);
+  }
+  50%, 100% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Red ghost colors */
+.ghost-red .top0,
+.ghost-red .top1,
+.ghost-red .top2,
+.ghost-red .top3,
+.ghost-red .top4,
+.ghost-red .st0,
+.ghost-red .st1,
+.ghost-red .st2,
+.ghost-red .st3,
+.ghost-red .st4,
+.ghost-red .st5 {
+  background-color: #ef4444;
+}
+
+/* Green ghost colors */
+.ghost-green .top0,
+.ghost-green .top1,
+.ghost-green .top2,
+.ghost-green .top3,
+.ghost-green .top4,
+.ghost-green .st0,
+.ghost-green .st1,
+.ghost-green .st2,
+.ghost-green .st3,
+.ghost-green .st4,
+.ghost-green .st5 {
+  background-color: #22c55e;
+}
+
+.top0 { grid-area: top0; }
+.top1 { grid-area: top1; }
+.top2 { grid-area: top2; }
+.top3 { grid-area: top3; }
+.top4 { grid-area: top4; }
+.st0 { grid-area: st0; }
+.st1 { grid-area: st1; }
+.st2 { grid-area: st2; }
+.st3 { grid-area: st3; }
+.st4 { grid-area: st4; }
+.st5 { grid-area: st5; }
+
+/* Animated bottom parts - only animate when moving */
+.an1 { grid-area: an1; }
+.an18 { grid-area: an18; }
+.an2 { grid-area: an2; }
+.an17 { grid-area: an17; }
+.an3 { grid-area: an3; }
+.an16 { grid-area: an16; }
+.an4 { grid-area: an4; }
+.an15 { grid-area: an15; }
+.an5 { grid-area: an5; }
+.an14 { grid-area: an14; }
+.an6 { grid-area: an6; }
+.an12 { grid-area: an12; }
+.an7 { grid-area: an7; }
+.an13 { grid-area: an13; }
+.an8 { grid-area: an8; }
+.an11 { grid-area: an11; }
+.an9 { grid-area: an9; }
+.an10 { grid-area: an10; }
+
+/* Red ghost flicker animations - only when moving */
+.ghost-animating.ghost-red .an1,
+.ghost-animating.ghost-red .an18 {
+  animation: flickerRed0 infinite 0.5s;
+}
+
+.ghost-animating.ghost-red .an2,
+.ghost-animating.ghost-red .an3,
+.ghost-animating.ghost-red .an4,
+.ghost-animating.ghost-red .an15,
+.ghost-animating.ghost-red .an16,
+.ghost-animating.ghost-red .an17 {
+  animation: flickerRed1 infinite 0.5s;
+}
+
+.ghost-animating.ghost-red .an6,
+.ghost-animating.ghost-red .an7,
+.ghost-animating.ghost-red .an8,
+.ghost-animating.ghost-red .an11,
+.ghost-animating.ghost-red .an12,
+.ghost-animating.ghost-red .an13 {
+  animation: flickerRed0 infinite 0.5s;
+}
+
+.ghost-animating.ghost-red .an9,
+.ghost-animating.ghost-red .an10 {
+  animation: flickerRed1 infinite 0.5s;
+}
+
+/* Green ghost flicker animations - only when moving */
+.ghost-animating.ghost-green .an1,
+.ghost-animating.ghost-green .an18 {
+  animation: flickerGreen0 infinite 0.5s;
+}
+
+.ghost-animating.ghost-green .an2,
+.ghost-animating.ghost-green .an3,
+.ghost-animating.ghost-green .an4,
+.ghost-animating.ghost-green .an15,
+.ghost-animating.ghost-green .an16,
+.ghost-animating.ghost-green .an17 {
+  animation: flickerGreen1 infinite 0.5s;
+}
+
+.ghost-animating.ghost-green .an6,
+.ghost-animating.ghost-green .an7,
+.ghost-animating.ghost-green .an8,
+.ghost-animating.ghost-green .an11,
+.ghost-animating.ghost-green .an12,
+.ghost-animating.ghost-green .an13 {
+  animation: flickerGreen0 infinite 0.5s;
+}
+
+.ghost-animating.ghost-green .an9,
+.ghost-animating.ghost-green .an10 {
+  animation: flickerGreen1 infinite 0.5s;
+}
+
+/* Static bottom parts when not moving */
+.ghost-red:not(.ghost-animating) .an1,
+.ghost-red:not(.ghost-animating) .an6,
+.ghost-red:not(.ghost-animating) .an7,
+.ghost-red:not(.ghost-animating) .an8,
+.ghost-red:not(.ghost-animating) .an11,
+.ghost-red:not(.ghost-animating) .an12,
+.ghost-red:not(.ghost-animating) .an13,
+.ghost-red:not(.ghost-animating) .an18 {
+  background-color: #ef4444;
+}
+
+.ghost-green:not(.ghost-animating) .an1,
+.ghost-green:not(.ghost-animating) .an6,
+.ghost-green:not(.ghost-animating) .an7,
+.ghost-green:not(.ghost-animating) .an8,
+.ghost-green:not(.ghost-animating) .an11,
+.ghost-green:not(.ghost-animating) .an12,
+.ghost-green:not(.ghost-animating) .an13,
+.ghost-green:not(.ghost-animating) .an18 {
+  background-color: #22c55e;
+}
+
+.ghost-red:not(.ghost-animating) .an2,
+.ghost-red:not(.ghost-animating) .an3,
+.ghost-red:not(.ghost-animating) .an4,
+.ghost-red:not(.ghost-animating) .an9,
+.ghost-red:not(.ghost-animating) .an10,
+.ghost-red:not(.ghost-animating) .an15,
+.ghost-red:not(.ghost-animating) .an16,
+.ghost-red:not(.ghost-animating) .an17 {
+  background-color: transparent;
+}
+
+.ghost-green:not(.ghost-animating) .an2,
+.ghost-green:not(.ghost-animating) .an3,
+.ghost-green:not(.ghost-animating) .an4,
+.ghost-green:not(.ghost-animating) .an9,
+.ghost-green:not(.ghost-animating) .an10,
+.ghost-green:not(.ghost-animating) .an15,
+.ghost-green:not(.ghost-animating) .an16,
+.ghost-green:not(.ghost-animating) .an17 {
+  background-color: transparent;
+}
+
+@keyframes flickerRed0 {
+  0%, 49% {
+    background-color: #ef4444;
+  }
+  50%, 100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flickerRed1 {
+  0%, 49% {
+    background-color: transparent;
+  }
+  50%, 100% {
+    background-color: #ef4444;
+  }
+}
+
+@keyframes flickerGreen0 {
+  0%, 49% {
+    background-color: #22c55e;
+  }
+  50%, 100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flickerGreen1 {
+  0%, 49% {
+    background-color: transparent;
+  }
+  50%, 100% {
+    background-color: #22c55e;
+  }
+}
+
+/* Eyes */
+.eye {
+  width: 40px;
+  height: 50px;
+  position: absolute;
+  top: 30px;
+  left: 10px;
+}
+
+.eye::before {
+  content: "";
+  background-color: white;
+  width: 20px;
+  height: 50px;
+  transform: translateX(10px);
+  display: block;
+  position: absolute;
+}
+
+.eye::after {
+  content: "";
+  background-color: white;
+  width: 40px;
+  height: 30px;
+  transform: translateY(10px);
+  display: block;
+  position: absolute;
+}
+
+.eye1 {
+  width: 40px;
+  height: 50px;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+.eye1::before {
+  content: "";
+  background-color: white;
+  width: 20px;
+  height: 50px;
+  transform: translateX(10px);
+  display: block;
+  position: absolute;
+}
+
+.eye1::after {
+  content: "";
+  background-color: white;
+  width: 40px;
+  height: 30px;
+  transform: translateY(10px);
+  display: block;
+  position: absolute;
+}
+
+/* Pupils */
+.pupil {
+  width: 20px;
+  height: 20px;
+  background-color: #1e40af;
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  z-index: 1;
+}
+
+.pupil1 {
+  width: 20px;
+  height: 20px;
+  background-color: #1e40af;
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  z-index: 1;
+}
+
+/* Eye movement only when animating */
+.ghost-animating .pupil,
+.ghost-animating .pupil1 {
+  animation: eyesMovement infinite 3s;
+}
+
+@keyframes eyesMovement {
+  0%, 49% {
+    transform: translateX(0px);
+  }
+  50%, 99% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+
+/* Shadow */
+.ghost-shadow {
+  display: none;
+}
+
+.ghost-animating .ghost-shadow {
+  animation: none;
+  display: none;
+}
+
+@keyframes shadowMovement {
+  0%, 49% {
+    opacity: 0.5;
+  }
+  50%, 100% {
+    opacity: 0.2;
+  }
+}

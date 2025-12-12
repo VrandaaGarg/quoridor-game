@@ -49,8 +49,8 @@ const initialGame = (p1Name: string, p2Name: string): GameState => ({
   turn: "player1",
   winner: null,
   players: {
-    player1: { id: "p1", name: p1Name || "Red", pos: { row: 0, col: 4 }, walls: 10 },
-    player2: { id: "p2", name: p2Name || "Green", pos: { row: 8, col: 4 }, walls: 10 },
+    player1: { id: "p1", name: p1Name || "Player 1", pos: { row: 0, col: 4 }, walls: 10 },
+    player2: { id: "p2", name: p2Name || "Player 2", pos: { row: 8, col: 4 }, walls: 10 },
   },
   walls: [],
 });

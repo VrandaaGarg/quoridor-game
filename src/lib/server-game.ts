@@ -9,7 +9,7 @@ import { getRedis } from "./redis";
 import { GameState, Player, Wall } from "../types";
 import { applyMove, applyWall } from "./game";
 
-const ROOM_TTL_SECONDS = 60 * 30;
+const ROOM_TTL_SECONDS = 60 * 30; // 30 minutes
 
 const roomKey = (id: string) => `room:${id}`;
 const gameKey = (id: string) => `game:${id}`;
