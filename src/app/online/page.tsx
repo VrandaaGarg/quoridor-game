@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useGameStore } from "@/store";
@@ -22,6 +22,11 @@ export default function OnlinePage() {
   const [isJoinMode, setIsJoinMode] = useState(false);
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+
+  // Reset any existing game state when entering this page
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   const createRoom = async () => {
     if (!name.trim()) return;
@@ -72,13 +77,6 @@ export default function OnlinePage() {
             Play with friends online
           </h1>
         </div>
-        <button
-          type="button"
-          onClick={reset}
-          className="rounded-full cursor-pointer border-2  border-amber-200 bg-white px-4 md:px-6 py-1 md:py-2 text-xs md:text-sm font-bold text-amber-900 shadow-md transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-lg active:translate-y-0"
-        >
-          Clear state
-        </button>
       </div>
 
       <div className="h-full my-auto flex flex-1 items-center justify-center">
