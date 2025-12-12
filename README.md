@@ -1,6 +1,6 @@
 # Quoridor Online 🏰
 
-![Quoridor Banner](./public/banner.png)
+![Quoridor Banner](https://res.cloudinary.com/dyetf2h9n/image/upload/v1765577464/Quoridor_gctz2q.png)
 
 A beautiful, animated implementation of the classic strategy board game **Quoridor**, built with Next.js, Framer Motion, and Redis. Play locally on a single device or invite a friend for a real-time online match.
 

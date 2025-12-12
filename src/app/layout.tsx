@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: "Quoridor Online",
     images: [
       {
-        url: "/banner.png",
+        url: "https://res.cloudinary.com/dyetf2h9n/image/upload/v1765577464/Quoridor_gctz2q.png",
         width: 1200,
         height: 630,
         alt: "Quoridor Online Game Board",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Quoridor Online - Strategy Board Game",
     description: "Play Quoridor locally or online with friends. Build walls, find paths, and race to the other side!",
-    images: ["/banner.png"],
+    images: ["https://res.cloudinary.com/dyetf2h9n/image/upload/v1765577464/Quoridor_gctz2q.png"],
     creator: "@VrandaaGarg", // Optional: Update if you have a handle
   },
   metadataBase: new URL("https://quoridor.vrandagarg.in/"), // Replace with your actual deployment URL
