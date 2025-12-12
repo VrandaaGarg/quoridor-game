@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import AnimatedBoard from "@/components/AnimatedBoard";
+import { BsGithub } from "react-icons/bs";
 
 export default function Home() {
   return (
@@ -31,8 +32,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center gap-4 sm:flex-row lg:items-start font-fredoka">
-            <Link
+          <div className="flex items-center gap-2 md:gap-4 flex-wrap justify-center md:items-start font-fredoka">
+           <div className="flex gap-4 md:gap-6">
+             <Link
               href="/local"
               className="rounded-full bg-amber-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-amber-300/50 transition hover:-translate-y-0.5 hover:bg-amber-600"
             >
@@ -44,6 +46,27 @@ export default function Home() {
             >
               Play Online
             </Link>
+           </div>
+            <a
+              href="https://github.com/VrandaaGarg/quoridor-game"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative rounded-full p-3 text-amber-100 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden ring-2 ring-amber-900/20"
+              style={{
+                background: "linear-gradient(135deg, #8B4513 0%, #6B3E0A 50%, #3D2510 100%)",
+                boxShadow: "0 4px 15px rgba(61, 37, 16, 0.4), inset 0 1px 1px rgba(255,255,255,0.2)",
+              }}
+            >
+              {/* Shine effect */}
+              <span 
+                className="absolute inset-0 animate-shine"
+                style={{
+                  background: "linear-gradient(90deg, transparent 0%, rgba(255, 230, 200, 0.4) 50%, transparent 100%)",
+                  transform: "skewX(-20deg)",
+                }}
+              />
+              <BsGithub className="h-6 w-6 relative z-10 drop-shadow-sm" />
+            </a>
           </div>
         </div>
       </div>

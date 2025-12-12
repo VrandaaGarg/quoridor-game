@@ -54,14 +54,19 @@ body {
 }
 
 @keyframes shine {
-  0% {
+  from {
     left: -100%;
+    opacity: 0;
   }
-  50%, 100% {
-    left: 100%;
+  50% {
+    opacity: 0.5;
+  }
+  to {
+    left: 200%;
+    opacity: 0;
   }
 }
 
 .animate-shine {
-  animation: shine 2s infinite ease-in-out;
+  animation: shine 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }

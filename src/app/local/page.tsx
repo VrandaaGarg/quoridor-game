@@ -69,7 +69,7 @@ export default function LocalPage() {
           <button
             type="button"
             onClick={handleStartGame}
-            className="mt-2 w-full transform rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 px-6 py-4 text-xl font-bold text-white shadow-lg shadow-amber-300/50 transition-all hover:-translate-y-1 hover:shadow-xl active:translate-y-0.5 active:shadow-sm"
+            className="mt-2 w-full transform rounded-xl bg-linear-to-br from-amber-400 to-amber-600 px-6 py-4 text-xl font-bold text-white shadow-lg shadow-amber-300/50 transition-all hover:-translate-y-1 hover:shadow-xl active:translate-y-0.5 active:shadow-sm"
           >
             Start Game!
           </button>

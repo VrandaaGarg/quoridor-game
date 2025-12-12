@@ -156,7 +156,7 @@ export default function AnimatedBoard() {
         {/* Grid container - this is where ghosts are positioned relative to */}
         <div className="relative h-full w-full p-1">
           {/* Grid cells */}
-          <div className="grid h-full w-full grid-cols-9 grid-rows-9 gap-[2px] sm:gap-1">
+          <div className="grid h-full w-full grid-cols-9 grid-rows-9 gap-0.5 sm:gap-1">
             {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, index) => {
               const row = Math.floor(index / GRID_SIZE);
               const col = index % GRID_SIZE;
