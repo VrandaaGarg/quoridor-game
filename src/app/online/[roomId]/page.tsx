@@ -88,9 +88,9 @@ export default function RoomPage() {
             Room {roomId}
           </p>
           <h1 className="text-3xl font-semibold text-amber-950">Play online</h1>
-          <p className="text-amber-800">
+          {/* <p className="text-amber-800">
             Share this link to invite a friend. Turn-based sync via Redis + WebSocket.
-          </p>
+          </p> */}
         </div>
         <div className="rounded-lg bg-white px-3 py-2 text-xs text-amber-800 shadow">
           You are: {myPlayer ?? "Spectator"}
@@ -105,8 +105,15 @@ export default function RoomPage() {
 
       {game ? (
         <>
+          {game.status === "waiting" && (
+            <div className="rounded-xl bg-amber-50 p-6 text-center shadow ring-2 ring-amber-200">
+              <p className="text-lg font-semibold text-amber-900">Waiting for opponent to join...</p>
+              <p className="mt-2 text-sm text-amber-700">Share this room code with your friend:</p>
+              <p className="mt-1 text-2xl font-bold text-amber-950 tracking-wider">{roomId}</p>
+            </div>
+          )}
           <GameUI />
-          <Board />
+          <Board interactive={game.status === "playing"} />
         </>
       ) : (
         <div className="rounded-xl bg-white p-6 text-center shadow">Loading game…</div>

@@ -61,8 +61,8 @@ function DraggableWall({
         height,
         touchAction: "none",
         background: isHorizontal
-          ? "linear-linear(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)"
-          : "linear-linear(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
+          ? "linear-gradient(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)"
+          : "linear-gradient(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
         boxShadow: "inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)",
         border: "1px solid #5D3A1A",
       }}
@@ -93,9 +93,9 @@ function PlayerPanel({
   if (compact) {
     return (
       <div
-        className="flex mt-4 flex-col items-center gap-2 rounded-xl p-2 transition min-w-[100px]"
+        className="flex flex-col items-center gap-2 rounded-xl p-2 transition min-w-[100px]"
         style={{
-          background: isCurrentTurn ? "C9986B" : "# #DEB887",
+          background: isCurrentTurn ? "#C9986B" : "#DEB887",
           boxShadow: isCurrentTurn
             ? "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.2)"
             : "0 2px 8px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1)",
@@ -107,7 +107,7 @@ function PlayerPanel({
         <div className="flex flex-col items-center gap-1">
           <div
             className={`relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full ${
-              player === "player1" ? "bg-white" : "bg-white"
+              player === "player1" ? "bg-red-400/30" : "bg-green-400/30"
             }`}
             style={{
               border: "2px solid #5D3A1A",
@@ -157,8 +157,8 @@ function PlayerPanel({
       className="flex flex-col items-center gap-4 rounded-2xl px-7 p-4 transition"
       style={{
         background: isCurrentTurn
-          ? "linear-linear(145deg, #C9986B 0%, #BC8B5E 100%) "
-          : "linear-linear(145deg, #DEB887 0%, #D2A679 100%)",
+          ? "linear-gradient(145deg, #C9986B 0%, #BC8B5E 100%) "
+          : "linear-gradient(145deg, #DEB887 0%, #D2A679 100%)",
         boxShadow: isCurrentTurn
           ? "0 6px 20px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.25)"
           : "0 4px 12px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.15)",
@@ -377,7 +377,7 @@ export function Board({ interactive = true }: Props) {
           ref={boardRef}
           className="relative aspect-square w-full max-w-[min(90vw,500px)] overflow-hidden rounded-2xl sm:rounded-3xl p-3 sm:p-4"
           style={{
-            background: "linear-linear(145deg, #8B4513 0%, #6B3E0A 30%, #5D3A1A 70%, #4A2E15 100%)",
+            background: "linear-gradient(145deg, #8B4513 0%, #6B3E0A 30%, #5D3A1A 70%, #4A2E15 100%)",
             boxShadow: "0 10px 30px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.3)",
             border: "3px solid #3D2510",
           }}
@@ -407,7 +407,7 @@ export function Board({ interactive = true }: Props) {
                       movable && interactive ? "hover:ring-2 hover:ring-amber-400" : ""
                     }`}
                     style={{
-                      background: "linear-linear(145deg, #E8C89A 0%, #DEB887 50%, #D4A574 100%)",
+                      background: "linear-gradient(145deg, #E8C89A 0%, #DEB887 50%, #D4A574 100%)",
                       boxShadow: "inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.15)",
                     }}
                   >
@@ -439,8 +439,8 @@ export function Board({ interactive = true }: Props) {
                   style={{
                     ...getWallStyle(w),
                     background: isH
-                      ? "linear-linear(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)"
-                      : "linear-linear(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
+                      ? "linear-gradient(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)"
+                      : "linear-gradient(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
                     boxShadow: "inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)",
                     border: "1px solid #5D3A1A",
                   }}
@@ -459,8 +459,8 @@ export function Board({ interactive = true }: Props) {
                   ...getWallStyle(wallPreview),
                   background: previewValid
                     ? wallPreview.dir === "h"
-                      ? "linear-linear(to bottom, #5D3A1A 0%, #6B3E0A 20%, #5D3A1A 40%, #4A2E15 60%, #5D3A1A 80%, #6B3E0A 100%)"
-                      : "linear-linear(to right, #5D3A1A 0%, #6B3E0A 20%, #5D3A1A 40%, #4A2E15 60%, #5D3A1A 80%, #6B3E0A 100%)"
+                      ? "linear-gradient(to bottom, #5D3A1A 0%, #6B3E0A 20%, #5D3A1A 40%, #4A2E15 60%, #5D3A1A 80%, #6B3E0A 100%)"
+                      : "linear-gradient(to right, #5D3A1A 0%, #6B3E0A 20%, #5D3A1A 40%, #4A2E15 60%, #5D3A1A 80%, #6B3E0A 100%)"
                     : "#ef4444",
                   boxShadow: previewValid
                     ? "inset 0 1px 2px rgba(255,255,255,0.15), inset 0 -1px 2px rgba(0,0,0,0.4), 0 3px 6px rgba(0,0,0,0.4)"

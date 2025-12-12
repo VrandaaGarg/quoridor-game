@@ -9,7 +9,6 @@
 import { create } from "zustand";
 import {
   GameState,
-  Player,
   Position,
   Wall,
 } from "./types";
@@ -80,8 +79,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ roomId, myId, mode: "online" }),
 
   setGame: (game: GameState) => {
-    // Clear valid moves if game is finished
-    const validMoves = game.status === "finished" ? [] : getValidMoves(game, game.turn);
+    // Only show valid moves when game is actively playing
+    const validMoves = game.status === "playing" ? getValidMoves(game, game.turn) : [];
     set({
       game,
       validMoves,
@@ -116,7 +115,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   isMyTurn: () => {
     const { game, myId } = get();
-    if (!game || game.status === "finished") return false;
+    if (!game || game.status !== "playing") return false;
     const turn = game.turn;
     const playerId = game.players[turn].id;
     return !myId || playerId === myId;
