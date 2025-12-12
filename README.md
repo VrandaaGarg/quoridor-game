@@ -1,4 +1,4 @@
-# Quoridor Online 🏰
+# Quoridor Online 
 
 ![Quoridor Banner](https://res.cloudinary.com/dyetf2h9n/image/upload/v1765577464/Quoridor_gctz2q.png)
 
