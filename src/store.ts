@@ -90,7 +90,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   movePawn: (to: Position) => {
     const game = get().game;
-    if (!game || game.status === "finished") return;
+    if (!game || game.status !== "playing") return;
     const next = applyMove(game, game.turn, to);
     set({
       game: next,
@@ -101,7 +101,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   placeWall: (wall: Wall) => {
     const game = get().game;
-    if (!game || game.status === "finished") return;
+    if (!game || game.status !== "playing") return;
     if (!isValidWall(game, wall)) return;
     const next = applyWall(game, game.turn, wall);
     set({
