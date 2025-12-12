@@ -18,52 +18,38 @@ const GRID_SIZE = 9;
 const LETTERS = ["Q", "U", "O", "R", "I", "D", "O", "R"];
 const GAME_LETTERS = ["G", "A", "M", "E"];
 
+// Walls positioned to create interesting paths
 const walls: Wall[] = [
-  { row: 0, col: 1, orientation: "vertical" },
-  { row: 1, col: 5, orientation: "horizontal" },
-  { row: 3, col: 7, orientation: "vertical" },
-  { row: 6, col: 4, orientation: "vertical" },
-  { row: 7, col: 2, orientation: "horizontal" },
+  { row: 1, col: 1, orientation: "horizontal" },
+  { row: 2, col: 6, orientation: "vertical" },
+  { row: 5, col: 1, orientation: "vertical" },
+  { row: 6, col: 5, orientation: "horizontal" },
 ];
 
+// Red ghost path - moves around top and right side, avoiding letters and walls
 const player1Path: Position[] = [
-  { row: 1, col: 6 },
-  { row: 2, col: 6 },
-  { row: 3, col: 6 },
-  { row: 4, col: 6 },
-  { row: 5, col: 6 },
-  { row: 5, col: 5 },
-  { row: 6, col: 5 },
-  { row: 7, col: 5 },
-  { row: 8, col: 5 },
-  { row: 8, col: 4 },
-  { row: 7, col: 4 },
-  { row: 6, col: 4 },
-  { row: 5, col: 4 },
-  { row: 4, col: 4 },
-  { row: 3, col: 4 },
-  { row: 2, col: 4 },
-  { row: 1, col: 4 },
-  { row: 1, col: 5 },
-  { row: 1, col: 6 },
+  { row: 0, col: 8 },
+  { row: 1, col: 8 },
+  { row: 2, col: 8 },
+  { row: 3, col: 8 },
+  { row: 3, col: 7 },
+  { row: 2, col: 7 },
+  { row: 1, col: 7 },
+  { row: 0, col: 7 },
+  { row: 0, col: 8 },
 ];
 
+// Green ghost path - moves around bottom and left side, avoiding letters and walls
 const player2Path: Position[] = [
-  { row: 6, col: 4 },
-  { row: 5, col: 4 },
-  { row: 4, col: 4 },
-  { row: 3, col: 4 },
-  { row: 2, col: 4 },
-  { row: 2, col: 3 },
-  { row: 1, col: 3 },
-  { row: 0, col: 3 },
-  { row: 0, col: 4 },
-  { row: 1, col: 4 },
-  { row: 2, col: 4 },
-  { row: 3, col: 4 },
-  { row: 4, col: 4 },
-  { row: 5, col: 4 },
-  { row: 6, col: 4 },
+  { row: 6, col: 0 },
+  { row: 7, col: 0 },
+  { row: 8, col: 0 },
+  { row: 8, col: 1 },
+  { row: 7, col: 1 },
+  { row: 6, col: 1 },
+  { row: 5, col: 1 },
+  { row: 5, col: 0 },
+  { row: 6, col: 0 },
 ];
 
 const MOVE_DURATION = 500;
@@ -126,7 +112,7 @@ export default function AnimatedBoard() {
 
   const getWallStyle = (wall: Wall) => {
     const cellSize = 100 / GRID_SIZE;
-    const gapSize = 0.5;
+    const gapSize = 0.8;
     
     if (wall.orientation === "horizontal") {
       return {
@@ -134,6 +120,9 @@ export default function AnimatedBoard() {
         top: `${(wall.row + 1) * cellSize - gapSize / 2}%`,
         width: `${cellSize * 2 - gapSize * 2}%`,
         height: `${gapSize * 2}%`,
+        background: "linear-gradient(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
+        boxShadow: "inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)",
+        border: "1px solid #5D3A1A",
       };
     } else {
       return {
@@ -141,76 +130,100 @@ export default function AnimatedBoard() {
         top: `${wall.row * cellSize + gapSize}%`,
         width: `${gapSize * 2}%`,
         height: `${cellSize * 2 - gapSize * 2}%`,
+        background: "linear-gradient(to right, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3E0A 60%, #8B4513 80%, #A0522D 100%)",
+        boxShadow: "inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)",
+        border: "1px solid #5D3A1A",
       };
     }
   };
 
   return (
-    <div className="relative aspect-square w-full max-w-md overflow-hidden rounded-3xl bg-linear-to-br from-orange-400 to-orange-500 p-3 shadow-2xl">
-      <div className="relative h-full w-full overflow-hidden">
-        {/* Grid cells */}
-        <div className="grid h-full w-full grid-cols-9 grid-rows-9 gap-1">
-          {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, index) => {
-            const row = Math.floor(index / GRID_SIZE);
-            const col = index % GRID_SIZE;
-            const letter = getLetterForCell(row, col);
+    <div
+      className="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl sm:rounded-3xl p-3 sm:p-4"
+      style={{
+        background: "linear-gradient(145deg, #8B4513 0%, #6B3E0A 30%, #5D3A1A 70%, #4A2E15 100%)",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1), inset 0 -2px 4px rgba(0,0,0,0.3)",
+        border: "3px solid #3D2510",
+      }}
+    >
+      <div
+        className="relative h-full w-full overflow-hidden rounded-xl sm:rounded-2xl"
+        style={{
+          background: "#A17B45",
+          boxShadow: "inset 0 3px 8px rgba(0,0,0,0.25), inset 0 -1px 2px rgba(255,255,255,0.15)",
+        }}
+      >
+        {/* Grid container - this is where ghosts are positioned relative to */}
+        <div className="relative h-full w-full p-1">
+          {/* Grid cells */}
+          <div className="grid h-full w-full grid-cols-9 grid-rows-9 gap-[2px] sm:gap-1">
+            {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, index) => {
+              const row = Math.floor(index / GRID_SIZE);
+              const col = index % GRID_SIZE;
+              const letter = getLetterForCell(row, col);
 
-            return (
-              <div
-                key={index}
-                className="flex items-center justify-center rounded-lg bg-orange-300/80 shadow-inner group overflow-hidden"
-                style={{
-                  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(255,255,255,0.3)",
-                }}
-              >
-                {letter && (
-                  <span 
-                    className="font-rubik text-amber-900 select-none text-2xl sm:text-3xl animate-wobble-float"
-                    style={{
-                      animationDelay: `${index * 150}ms`
-                    }}
-                  >
-                    {letter}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              return (
+                <div
+                  key={index}
+                  className="flex items-center justify-center rounded-md sm:rounded-lg overflow-hidden"
+                  style={{
+                    background: "linear-gradient(145deg, #E8C89A 0%, #DEB887 50%, #D4A574 100%)",
+                    boxShadow: "inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.15)",
+                  }}
+                >
+                  {letter && (
+                    <span 
+                      className="font-rubik select-none text-xl sm:text-2xl md:text-3xl animate-wobble-float"
+                      style={{
+                        color: "#3D2510",
+                        textShadow: "1px 1px 2px rgba(255,255,255,0.3)",
+                        animationDelay: `${index * 150}ms`
+                      }}
+                    >
+                      {letter}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-        {/* Walls */}
-        {walls.map((wall, index) => (
+          {/* Walls */}
+          {walls.map((wall, index) => (
+            <div
+              key={`wall-${index}`}
+              className="absolute rounded-sm"
+              style={getWallStyle(wall)}
+            />
+          ))}
+
+          {/* Player 1 (Red Ghost) */}
           <div
-            key={`wall-${index}`}
-            className="absolute rounded-sm bg-stone-600 shadow-lg"
-            style={getWallStyle(wall)}
-          />
-        ))}
+            className="absolute transition-all duration-500 ease-in-out flex items-center justify-center pointer-events-none"
+            style={{
+              left: `${(player1Pos.col / GRID_SIZE) * 100}%`,
+              top: `${(player1Pos.row / GRID_SIZE) * 100}%`,
+              width: `${100 / GRID_SIZE}%`,
+              height: `${100 / GRID_SIZE}%`,
+              zIndex: 100,
+            }}
+          >
+            <Ghost color="red" isMoving={player1Moving} />
+          </div>
 
-        {/* Player 1 (Red Ghost) */}
-        <div
-          className="absolute transition-all duration-500 ease-in-out flex items-center justify-center"
-          style={{
-            left: `${(player1Pos.col / GRID_SIZE) * 100}%`,
-            top: `${(player1Pos.row / GRID_SIZE) * 100}%`,
-            width: `${100 / GRID_SIZE}%`,
-            height: `${100 / GRID_SIZE}%`,
-          }}
-        >
-          <Ghost color="red" isMoving={player1Moving} />
-        </div>
-
-        {/* Player 2 (Green Ghost) */}
-        <div
-          className="absolute transition-all duration-500 ease-in-out flex items-center justify-center"
-          style={{
-            left: `${(player2Pos.col / GRID_SIZE) * 100}%`,
-            top: `${(player2Pos.row / GRID_SIZE) * 100}%`,
-            width: `${100 / GRID_SIZE}%`,
-            height: `${100 / GRID_SIZE}%`,
-          }}
-        >
-          <Ghost color="green" isMoving={player2Moving} />
+          {/* Player 2 (Green Ghost) */}
+          <div
+            className="absolute transition-all duration-500 ease-in-out flex items-center justify-center pointer-events-none"
+            style={{
+              left: `${(player2Pos.col / GRID_SIZE) * 100}%`,
+              top: `${(player2Pos.row / GRID_SIZE) * 100}%`,
+              width: `${100 / GRID_SIZE}%`,
+              height: `${100 / GRID_SIZE}%`,
+              zIndex: 100,
+            }}
+          >
+            <Ghost color="green" isMoving={player2Moving} />
+          </div>
         </div>
       </div>
     </div>

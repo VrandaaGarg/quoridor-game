@@ -15,8 +15,8 @@
 }
 
 body {
-  background: radial-linear(circle at 20% 20%, #ffe8bf 0, transparent 25%),
-    radial-linear(circle at 80% 0%, #ffd28d 0, transparent 25%),
+  background: radial-gradient(circle at 20% 20%, #ffe8bf 0, transparent 25%),
+    radial-gradient(circle at 80% 0%, #ffd28d 0, transparent 25%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
@@ -51,4 +51,17 @@ body {
 .animate-wobble-float {
   animation: wobble-float 3s infinite ease-in-out;
   display: inline-block;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+.animate-shine {
+  animation: shine 2s infinite ease-in-out;
 }

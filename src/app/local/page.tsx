@@ -13,15 +13,14 @@ import { useGameStore } from "@/store";
 
 export default function LocalPage() {
   const router = useRouter();
-  const { game, initLocal } = useGameStore();
+  const { initLocal, reset } = useGameStore();
   const [p1, setP1] = useState("Player 1");
   const [p2, setP2] = useState("Player 2");
 
+  // Reset any existing game state when entering this page
   useEffect(() => {
-    if (game) {
-      router.replace("/local/game");
-    }
-  }, [game, router]);
+    reset();
+  }, [reset]);
 
   const handleStartGame = () => {
     initLocal(p1, p2);
