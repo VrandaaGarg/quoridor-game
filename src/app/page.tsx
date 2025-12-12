@@ -36,13 +36,13 @@ export default function Home() {
            <div className="flex gap-4 md:gap-6">
              <Link
               href="/local"
-              className="rounded-full bg-amber-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-amber-300/50 transition hover:-translate-y-0.5 hover:bg-amber-600"
+              className="rounded-full cursor-pointer bg-amber-500 px-4 md:px-6 py-2 md:py-3 text-sm md:text-base font-semibold text-white shadow-lg shadow-amber-300/50 transition hover:-translate-y-0.5 hover:bg-amber-600"
             >
               Local Game
             </Link>
             <Link
               href="/online"
-              className="rounded-full border border-amber-200 bg-white px-6 py-3 text-base font-semibold text-amber-900 shadow transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50"
+              className="rounded-full border cursor-pointer border-amber-200 bg-white px-4 md:px-6 py-2 md:py-3 text-sm md:text-base font-semibold text-amber-900 shadow transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50"
             >
               Play Online
             </Link>
@@ -51,7 +51,7 @@ export default function Home() {
               href="https://github.com/VrandaaGarg/quoridor-game"
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative rounded-full p-3 text-amber-100 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden ring-2 ring-amber-900/20"
+              className="group cursor-pointer relative rounded-full p-2 md:p-3 text-amber-100 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden ring-2 ring-amber-900/20"
               style={{
                 background: "linear-gradient(135deg, #8B4513 0%, #6B3E0A 50%, #3D2510 100%)",
                 boxShadow: "0 4px 15px rgba(61, 37, 16, 0.4), inset 0 1px 1px rgba(255,255,255,0.2)",
@@ -65,7 +65,7 @@ export default function Home() {
                   transform: "skewX(-20deg)",
                 }}
               />
-              <BsGithub className="h-6 w-6 relative z-10 drop-shadow-sm" />
+              <BsGithub className="h-5 w-5 md:h-6 md:w-6 relative z-10 drop-shadow-sm" />
             </a>
           </div>
         </div>
