@@ -4,8 +4,8 @@
 
 A beautiful, animated implementation of the classic strategy board game **Quoridor**, built with Next.js, Framer Motion, and Redis. Play locally on a single device or invite a friend for a real-time online match.
 
-🔗 **Live Demo:** [quoridor.vrandagarg.in](https://quoridor.vrandagarg.in)  
-👤 **Creator:** [Vranda Garg](https://vrandagarg.in/)
+ **Live Demo:** [quoridor.vrandagarg.in](https://quoridor.vrandagarg.in)  
+ **Creator:** [Vranda Garg](https://vrandagarg.in/)
 
 ## 💡 Motivation & Learning Journey
 
@@ -23,7 +23,7 @@ For this project, I implemented a **Serverless-friendly approach using HTTP + SS
 *   **SSE** pushes updates instantly to clients without them needing to refresh or poll.
 *   The system is completely stateless and frictionless—users can jump in via a link and play immediately.
 
-## 🎮 Game Features
+##  Game Features
 
 - **Local Pass & Play:** Two-player mode on a single device.
 - **Online Multiplayer:** Real-time matches with friends via shareable room codes.
@@ -32,7 +32,7 @@ For this project, I implemented a **Serverless-friendly approach using HTTP + SS
 - **Responsive Design:** Optimized for both desktop and mobile play.
 - **Confetti Celebration:** Fun victory effects when a player wins.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 - **Styling:** Tailwind CSS, Framer Motion (animations)
@@ -41,7 +41,7 @@ For this project, I implemented a **Serverless-friendly approach using HTTP + SS
 - **Icons:** React Icons
 - **Fonts:** Geist Sans, Fredoka, Rubik Bubbles
 
-## 🚀 Getting Started
+##  Getting Started
 
 1. **Clone the repository:**
    ```bash
